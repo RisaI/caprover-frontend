@@ -1,9 +1,11 @@
 import {
     CheckOutlined,
     CodeOutlined,
+    DatabaseOutlined,
     DisconnectOutlined,
     LinkOutlined,
     LoadingOutlined,
+    LockOutlined,
 } from '@ant-design/icons'
 import { Card, Input, Row, Table, Tag, Tooltip } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
@@ -45,7 +47,7 @@ class AppsTable extends Component<
         const ALIGN: 'center' = 'center'
         const columns: ColumnProps<TableData>[] = [
             {
-                title: 'App Name',
+                title: 'Name',
                 dataIndex: 'appName',
                 key: 'appName',
                 render: (appName: string) => (
@@ -59,24 +61,34 @@ class AppsTable extends Component<
                 sortDirections: ['descend', 'ascend'],
             },
             {
-                title: 'Persistent Data	',
-                dataIndex: 'hasPersistentData',
-                key: 'hasPersistentData',
+                title: 'Features',
+                dataIndex: 'features',
+                key: 'features',
                 align: ALIGN,
-                render: (hasPersistentData: boolean) => {
-                    if (!hasPersistentData) {
-                        return <span />
-                    }
+                render: (_: unknown, app: TableData) => {
+                    const hasHttps =
+                        !app.hasDefaultSubDomainSsl ||
+                        app.customDomain.some((d) => d.hasSsl)
+                    const { hasPersistentData } = app
 
                     return (
-                        <span>
-                            <CheckOutlined />
+                        <span style={{ display: 'inline-flex', gap: 5 }}>
+                            {hasHttps ? (
+                                <Tooltip title="App has HTTPS on at least one of the domains">
+                                    <LockOutlined style={{ color: '#2a2' }} />
+                                </Tooltip>
+                            ) : undefined}
+                            {hasPersistentData ? (
+                                <Tooltip title="App has persistent data">
+                                    <DatabaseOutlined />
+                                </Tooltip>
+                            ) : undefined}
                         </span>
                     )
                 },
             },
             {
-                title: 'Instance Count',
+                title: 'Instances',
                 dataIndex: 'instanceCount',
                 key: 'instanceCount',
                 align: ALIGN,
